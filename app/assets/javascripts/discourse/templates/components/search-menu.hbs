@@ -11,15 +11,7 @@
     <a href class="show-help" {{action "showSearchHelp" bubbles=false}}>{{i18n "show_help"}}</a>
     <div class='clearfix'></div>
   </div>
-  {{#if loading}}
-    <div class="searching">{{loading-spinner}}</div>
-  {{else}}
-    <div class="results">
-    {{#if noResults}}
-      <div class="no-results">
-        {{i18n "search.no_results"}}
-      </div>
-    {{else}}
+
       {{#each content.resultTypes as |resultType|}}
         <ul>
           <li class="heading row">{{resultType.name}}</li>
@@ -34,7 +26,6 @@
           {{/if}}
         </div>
       {{/each}}
-    {{/if}}
-    </div>
+
   {{/if}}
 {{/menu-panel}}

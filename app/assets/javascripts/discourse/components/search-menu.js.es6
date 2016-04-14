@@ -6,7 +6,6 @@ import showModal from 'discourse/lib/show-modal';
 let _dontSearch = false;
 export default Ember.Component.extend({
   searchService: Ember.inject.service('search'),
-  classNames: ['search-menu'],
   typeFilter: null,
 
   @observes('searchService.searchContext')
@@ -68,7 +67,6 @@ export default Ember.Component.extend({
     } else {
       this.setProperties({ content: null });
     }
-    this.set('selectedIndex', 0);
   },
 
   searchTerm(term, typeFilter) {
