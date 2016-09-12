@@ -9,6 +9,7 @@ class EmailLog < ActiveRecord::Base
 
   scope :sent,    -> { where(skipped: false) }
   scope :skipped, -> { where(skipped: true) }
+  scope :bounced, -> { sent.where(bounced: true) }
 
   after_create do
     # Update last_emailed_at if the user_id is present and email was sent
@@ -72,10 +73,14 @@ end
 #  topic_id       :integer
 #  skipped        :boolean          default(FALSE)
 #  skipped_reason :string
+#  bounce_key     :string
+#  bounced        :boolean          default(FALSE), not null
+#  message_id     :string
 #
 # Indexes
 #
 #  index_email_logs_on_created_at              (created_at)
+#  index_email_logs_on_message_id              (message_id)
 #  index_email_logs_on_reply_key               (reply_key)
 #  index_email_logs_on_skipped_and_created_at  (skipped,created_at)
 #  index_email_logs_on_user_id_and_created_at  (user_id,created_at)

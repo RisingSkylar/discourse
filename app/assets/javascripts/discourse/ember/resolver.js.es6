@@ -39,7 +39,6 @@ function parseName(fullName) {
 }
 
 export default Ember.DefaultResolver.extend({
-
   parseName: parseName,
 
   normalize(fullName) {
@@ -70,7 +69,7 @@ export default Ember.DefaultResolver.extend({
     // If we end with the name we want, use it. This allows us to define components within plugins.
     const suffix = parsedName.type + 's/' + parsedName.fullNameWithoutType,
           dashed = Ember.String.dasherize(suffix),
-          moduleName = Ember.keys(requirejs.entries).find(function(e) {
+          moduleName = Object.keys(requirejs.entries).find(function(e) {
             return (e.indexOf(suffix, e.length - suffix.length) !== -1) ||
                    (e.indexOf(dashed, e.length - dashed.length) !== -1);
           });
@@ -116,7 +115,8 @@ export default Ember.DefaultResolver.extend({
   },
 
   resolveTemplate(parsedName) {
-    return this.findPluginTemplate(parsedName) ||
+    return this.findPluginMobileTemplate(parsedName) ||
+           this.findPluginTemplate(parsedName) ||
            this.findMobileTemplate(parsedName) ||
            this.findTemplate(parsedName) ||
            Ember.TEMPLATES.not_found;
@@ -140,6 +140,13 @@ export default Ember.DefaultResolver.extend({
     return this.findTemplate(pluginParsedName);
   },
 
+  findPluginMobileTemplate(parsedName) {
+    if (this.mobileView) {
+      var pluginParsedName = this.parseName(parsedName.fullName.replace("template:", "template:javascripts/mobile/"));
+      return this.findTemplate(pluginParsedName);
+    }
+  },
+
   findMobileTemplate(parsedName) {
     if (this.mobileView) {
       var mobileParsedName = this.parseName(parsedName.fullName.replace("template:", "template:mobile/"));
@@ -151,11 +158,13 @@ export default Ember.DefaultResolver.extend({
     const withoutType = parsedName.fullNameWithoutType,
           slashedType = withoutType.replace(/\./g, '/'),
           decamelized = withoutType.decamelize(),
+          dashed = decamelized.replace(/\./g, '-').replace(/\_/g, '-'),
           templates = Ember.TEMPLATES;
 
     return this._super(parsedName) ||
            templates[slashedType] ||
            templates[withoutType] ||
+           templates[dashed] ||
            templates[decamelized.replace(/\./, '/')] ||
            templates[decamelized.replace(/\_/, '/')] ||
            this.findAdminTemplate(parsedName) ||

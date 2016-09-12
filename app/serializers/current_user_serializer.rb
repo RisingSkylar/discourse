@@ -32,7 +32,9 @@ class CurrentUserSerializer < BasicUserSerializer
              :post_queue_new_count,
              :show_queued_posts,
              :read_faq,
-             :automatically_unpin_topics
+             :automatically_unpin_topics,
+             :mailing_list_mode,
+             :previous_visit_at
 
   def include_site_flagged_posts_count?
     object.staff?
@@ -159,6 +161,10 @@ class CurrentUserSerializer < BasicUserSerializer
 
   def include_show_queued_posts?
     object.staff? && (NewPostManager.queue_enabled? || QueuedPost.new_count > 0)
+  end
+
+  def mailing_list_mode
+    object.user_option.mailing_list_mode
   end
 
 end

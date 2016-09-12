@@ -1,17 +1,21 @@
-{{#if controller.visible}}
+{{#if visible}}
 <div class="card-content">
 
   <a href={{user.path}} {{action "showUser"}} class="card-huge-avatar">{{bound-avatar avatar "huge"}}</a>
 
   <div class="names">
     <span>
-      <h1 class="{{staff}} {{new_user}}">
-        <a href={{user.path}} {{action "showUser"}}>{{username}} {{user-status user currentUser=currentUser}}</a>
+      <h1 class="{{staff}} {{new_user}} {{if nameFirst "full-name" "username"}}">
+        <a href={{user.path}} {{action "showUser"}}>{{if nameFirst user.name username}} {{user-status user currentUser=currentUser}}</a>
       </h1>
 
-      {{#if user.name}}
-        <h2>{{user.name}}</h2>
-      {{/if}}
+      {{#unless nameFirst}}
+        {{#if user.name}}
+          <h2 class='full-name'>{{user.name}}</h2>
+        {{/if}}
+      {{else}}
+        <h2 class='username'>{{username}}</h2>
+      {{/unless}}
 
       {{#if user.title}}
         <h2>{{user.title}}</h2>
@@ -27,7 +31,7 @@
     {{/if}}
 
     {{#if showFilter}}
-      <li><a class='btn' href {{action "togglePosts" user}}>{{fa-icon "filter"}}{{i18n 'topic.filter_to' username=username post_count=topicPostCount}}</a></li>
+      <li><a class='btn' href {{action "togglePosts" user}}>{{fa-icon "filter"}}{{i18n 'topic.filter_to' username=username count=topicPostCount}}</a></li>
     {{/if}}
 
     {{#if hasUserFilters}}
@@ -86,7 +90,7 @@
 
   {{#if publicUserFields}}
     <div class="public-user-fields">
-      {{#each uf in publicUserFields}}
+      {{#each publicUserFields as |uf|}}
         {{#if uf.value}}
           <div class="public-user-field {{uf.field.dasherized_name}}">
             <span class="user-field-name">{{uf.field.name}}:</span>
@@ -99,7 +103,7 @@
 
   {{#if showBadges}}
     <div class="badge-section">
-      {{#each ub in user.featured_user_badges}}
+      {{#each user.featured_user_badges as |ub|}}
         {{user-badge badge=ub.badge user=user}}
       {{/each}}
       {{#if showMoreBadges}}
